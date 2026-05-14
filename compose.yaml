@@ -2,6 +2,8 @@ services:
   app:
     build: .
     restart: unless-stopped
+    environment:
+      - MD5_PASS
     ports:
       - "3000:3000"
     volumes:

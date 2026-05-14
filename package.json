@@ -8,14 +8,19 @@
   "files": [
     "dist"
   ],
+  "workspaces": [
+    "petlibro-client"
+  ],
   "scripts": {
-    "build": "tsc",
+    "build": "npm run build --workspace=petlibro-client && tsc",
+    "dev": "npm run build --workspace=petlibro-client && tsx watch src/index.ts",
     "start": "node dist/index.js"
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.4",
     "@types/express": "^5.0.6",
     "@types/node": "^24.12.2",
+    "tsx": "^4.21.0",
     "typescript": "^6.0.3"
   },
   "dependencies": {
