@@ -20,7 +20,7 @@ const getServer = (): McpServer => {
     return response;
   }
 
-  async function makeFeedRequest(): Promise<string> {
+  async function getAuthToken(): Promise<string> {
     const configurationParameters = {
       baseServer: petlibro.servers[0],
       authMethods: {
@@ -44,12 +44,48 @@ const getServer = (): McpServer => {
       timezone: "America/Chicago",
     });
     assertSuccess(loginResponse);
+    return loginResponse.data.token;
+  }
 
+  async function getRecentActivity(): Promise<string> {
     const devicesApi = new petlibro.DevicesApi(
       petlibro.createConfiguration({
-        ...configurationParameters,
+        baseServer: petlibro.servers[0],
         authMethods: {
-          TokenAuth: loginResponse.data.token,
+          TokenAuth: await getAuthToken(),
+          Source: "ANDROID",
+          Language: "EN",
+          Version: "1.3.45",
+          Timezone: "America/Chicago",
+        },
+      }),
+    );
+    const devicesResponse = await devicesApi.listDevices();
+    assertSuccess(devicesResponse);
+    const [device] = devicesResponse.data;
+    if (!device) {
+      throw new Error("No feeder devices found.");
+    }
+    const workRecordsResponse = await devicesApi.listWorkRecords({
+      deviceSn: device.deviceSn,
+      startTime: Date.now() - 7 * 24 * 60 * 60 * 1000,
+      endTime: Date.now(),
+      size: 25,
+    });
+    assertSuccess(workRecordsResponse);
+    const workRecords = workRecordsResponse.data
+      .map((d) => d.workRecords)
+      .flat()
+      .filter((r) => r.type === "GRAIN_OUTPUT_SUCCESS");
+    return workRecords;
+  }
+
+  async function makeFeedRequest(): Promise<string> {
+    const devicesApi = new petlibro.DevicesApi(
+      petlibro.createConfiguration({
+        baseServer: petlibro.servers[0],
+        authMethods: {
+          TokenAuth: await getAuthToken(),
           Source: "ANDROID",
           Language: "EN",
           Version: "1.3.45",
@@ -82,6 +118,27 @@ const getServer = (): McpServer => {
       const alerts = await makeFeedRequest();
       return {
         content: [{ type: "text", text: alerts }],
+      };
+    },
+  );
+
+  server.registerTool(
+    "check_food_history",
+    {
+      description:
+        "Get a list of recent feeding events, ordered from most to least recent. This can tell you when the most recent feeding occurred to avoid giving too many servings.",
+    },
+    async () => {
+      const activities = await getRecentActivity();
+      const table = `
+| Date and Time | Servings | Detail |
+|---|---|---|
+${activities
+  .map((a) => `| ${a.formatRecordTime} | ${a.actualGrainNum} | ${a.content} |`)
+  .join("\n")}
+`;
+      return {
+        content: [{ type: "text", text: table }],
       };
     },
   );
