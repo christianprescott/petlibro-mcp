@@ -79,22 +79,10 @@ const getServer = (): McpServer => {
         "Dispense food from the feeder. One serving will be put into the bowl. Use this tool sparingly - too many servings can overfill the bowl or spoil the recipient's appetite.",
     },
     async () => {
-      try {
-        const alerts = await makeFeedRequest();
-        return {
-          content: [{ type: "text", text: alerts }],
-        };
-      } catch (e: unknown) {
-        return {
-          isError: true,
-          content: [
-            {
-              type: "text",
-              text: e instanceof Error ? e.message : String(e),
-            },
-          ],
-        };
-      }
+      const alerts = await makeFeedRequest();
+      return {
+        content: [{ type: "text", text: alerts }],
+      };
     },
   );
 
