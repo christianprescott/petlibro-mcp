@@ -8,4 +8,6 @@ services:
       - "3000:3000"
     volumes:
       - .:/app
+      - /app/dist
       - /app/node_modules
+      - /app/petlibro-client
