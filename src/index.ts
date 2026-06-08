@@ -4,6 +4,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { z } from "zod";
 import express, { Request, Response } from "express";
+import morgan from "morgan";
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
@@ -161,6 +162,7 @@ const getServer = (): McpServer => {
 };
 
 const app = express();
+app.use(morgan("common"));
 app.use(express.json());
 
 app.post("/mcp", async (req: Request, res: Response) => {
