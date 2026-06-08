@@ -11,10 +11,11 @@ better supported experience.
 
 ## Getting Started
 
-Set your MD5 hashed Petlibro password and start the server:
+Set your email and MD5 hashed Petlibro password and start the server:
 
 ```sh
-export MD5_PASS=$(echo -n "your_password" | md5sum | cut -d' ' -f1)
+export PETLIBRO_USER="your_email"
+export PETLIBRO_PASS_MD5=$(echo -n "your_password" | md5sum | cut -d' ' -f1)
 docker compose up
 ```
 

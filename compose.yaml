@@ -3,6 +3,7 @@ services:
     build: .
     restart: unless-stopped
     environment:
-      - MD5_PASS
+      - PETLIBRO_USER
+      - PETLIBRO_PASS_MD5
     ports:
       - "3000:3000"

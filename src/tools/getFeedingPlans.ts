@@ -71,7 +71,7 @@ const getFeedingPlans: ToolDefinition = {
     - count: number of plans
     - plans: array of { time, repeatsOn, label, servings }
       - time: time of day when food is dispensed
-      - repeatsOn: days of the week when the feeding will be repeated at the same time each day. If this is empty, the plan will does not repeat.
+      - repeatsOn: days of the week when the feeding will be repeated at the same time each day. If this is empty, the plan does not repeat and will dispense only one time.
       - label: optional label. May be useful to infer this feeding's purpose, but may be absent.
       - servings: number of servings dispensed`,
   },
