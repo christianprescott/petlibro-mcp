@@ -47,7 +47,9 @@ const getServer = (): McpServer => {
     return loginResponse.data.token;
   }
 
-  async function getRecentActivity(): Promise<string> {
+  async function getRecentActivity(): Promise<
+    petlibro.ListWorkRecords200ResponseAllOfDataInnerWorkRecordsInner[]
+  > {
     const devicesApi = new petlibro.DevicesApi(
       petlibro.createConfiguration({
         baseServer: petlibro.servers[0],
@@ -73,11 +75,15 @@ const getServer = (): McpServer => {
       size: 25,
     });
     assertSuccess(workRecordsResponse);
-    const workRecords = workRecordsResponse.data
+    return workRecordsResponse.data
       .map((d) => d.workRecords)
       .flat()
-      .filter((r) => r.type === "GRAIN_OUTPUT_SUCCESS");
-    return workRecords;
+      .filter(
+        (
+          r,
+        ): r is petlibro.ListWorkRecords200ResponseAllOfDataInnerWorkRecordsInner =>
+          r !== undefined && r.type === "GRAIN_OUTPUT_SUCCESS",
+      );
   }
 
   async function makeFeedRequest(): Promise<string> {
