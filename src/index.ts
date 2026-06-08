@@ -131,20 +131,28 @@ const getServer = (): McpServer => {
   server.registerTool(
     "check_food_history",
     {
-      description:
-        "Get a list of recent feeding events, ordered from most to least recent. This can tell you when the most recent feeding occurred to avoid giving too many servings.",
+      description: `Get a list of recent feeding events, ordered from most to least recent.
+        This can tell you when the most recent feeding occurred to avoid giving too many servings.
+        Returns a JSON object with:
+        - count: number of feedings
+        - feedings: array of { timestamp, servings, detail }`,
     },
     async () => {
       const activities = await getRecentActivity();
-      const table = `
-| Date and Time | Servings | Detail |
-|---|---|---|
-${activities
-  .map((a) => `| ${a.formatRecordTime} | ${a.actualGrainNum} | ${a.content} |`)
-  .join("\n")}
-`;
       return {
-        content: [{ type: "text", text: table }],
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({
+              count: activities.length,
+              feedings: activities.map((a) => ({
+                timestamp: a.formatRecordTime,
+                servings: a.actualGrainNum,
+                detail: a.content,
+              })),
+            }),
+          },
+        ],
       };
     },
   );
