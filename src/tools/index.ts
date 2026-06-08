@@ -1,4 +1,5 @@
 import dispenseFood from "./dispenseFood.js";
-import checkFoodHistory from "./checkFoodHistory.js";
+import getFeedingHistory from "./getFeedingHistory.js";
+import getFeedingPlans from "./getFeedingPlans.js";
 
-export default [checkFoodHistory, dispenseFood];
+export default [getFeedingPlans, getFeedingHistory, dispenseFood];

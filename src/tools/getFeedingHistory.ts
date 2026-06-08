@@ -41,11 +41,12 @@ async function getRecentActivity(): Promise<
     );
 }
 
-const checkFoodHistory: ToolDefinition = {
-  name: "check_food_history",
+const getFeedingHistory: ToolDefinition = {
+  name: "get_feeding_history",
   config: {
-    description: `Get a list of recent feeding events, ordered from most to least recent.
-        This can tell you when the most recent feeding occurred to avoid giving too many servings.
+    description: `Get a list of feeding events that have happened in the past, ordered from most to least recent.
+        This can tell you when the most recent feeding occurred to answer questions about when pets were last fed and
+        to avoid giving too many servings.
         Returns a JSON object with:
         - count: number of feedings
         - feedings: array of { timestamp, servings, detail }`,
@@ -70,4 +71,4 @@ const checkFoodHistory: ToolDefinition = {
   },
 };
 
-export default checkFoodHistory;
+export default getFeedingHistory;

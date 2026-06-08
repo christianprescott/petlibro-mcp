@@ -18,9 +18,14 @@ export async function getAuthToken(): Promise<string> {
   const authApi = new petlibro.AuthApi(
     petlibro.createConfiguration(configurationParameters),
   );
+  if (!process.env.MD5_PASS) {
+    throw new Error(
+      "No Petlibro password is set. Owner must authenticate to use this tool.",
+    );
+  }
   const loginResponse = await authApi.login({
     email: "johnanderson@mailinator.com",
-    password: process.env.MD5_PASS || "",
+    password: process.env.MD5_PASS,
     appId: 1,
     appSn: petlibro.LoginRequestAppSnEnum.C35772530d1041699c87fe62348507a8,
     country: "US",
