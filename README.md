@@ -27,7 +27,9 @@ to select an `Authorization:` header with a fake value.
 Use the dev script to run tsx and watch for changes:
 
 ```sh
-docker compose run -e MD5_PASS -p 3000:3000 --rm app npm run dev
+docker compose run --rm -e MD5_PASS -p 3000:3000 \
+  -v "$PWD:/app" -v "/app/petlibro-client" \
+  app sh -c "npm install && npm run dev"
 ```
 
 ### Generate API Client
