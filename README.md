@@ -1,6 +1,4 @@
-[![npm test](https://github.com/christianprescott/petlibro-mcp/actions/workflows/test.yml/badge.svg)](https://github.com/christianprescott/petlibro-mcp/actions/workflows/test.yml)
-
-# Petlibro MCP Server
+# Petlibro MCP Server [![npm test](https://github.com/christianprescott/petlibro-mcp/actions/workflows/test.yml/badge.svg)](https://github.com/christianprescott/petlibro-mcp/actions/workflows/test.yml)
 
 This server offers tools enabling AI interactions with Petlibro smart feeder and fountain
 products. Check feeding schedules and history, emit food, and more.
