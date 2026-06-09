@@ -48,3 +48,11 @@ docker run -v ${PWD}/petlibro-client:/local --rm openapitools/openapi-generator-
   -g typescript \
   -o /local/
 ```
+
+## Test
+
+```sh
+docker compose run --rm \
+  -v "$PWD:/app" -v "/app/petlibro-client" \
+  app npm test -- --watch
+```
