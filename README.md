@@ -1,3 +1,5 @@
+[![npm test](https://github.com/christianprescott/petlibro-mcp/actions/workflows/test.yml/badge.svg)](https://github.com/christianprescott/petlibro-mcp/actions/workflows/test.yml)
+
 # Petlibro MCP Server
 
 This server offers tools enabling AI interactions with Petlibro smart feeder and fountain
