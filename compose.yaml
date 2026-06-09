@@ -5,5 +5,13 @@ services:
     environment:
       - PETLIBRO_USER
       - PETLIBRO_PASS_MD5
+      # Set DB_PATH to save cached tokens to disk, persisting them across
+      # restarts. The tokens are sensitive and should be handled with care.
+      # - DB_PATH=/data/sqlite.db
     ports:
       - "3000:3000"
+    volumes:
+      - app-data:/data
+
+volumes:
+  app-data:

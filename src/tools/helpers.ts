@@ -1,4 +1,5 @@
 import * as petlibro from "petlibro-client";
+import { getCachedToken, setCachedToken } from "../db/index.js";
 
 export function assertSuccess(response: petlibro.Response) {
   if (response.code != 0) throw new Error(response.msg);
@@ -23,17 +24,21 @@ export async function createApiConfiguration(): Promise<petlibro.Configuration> 
 }
 
 export async function getAuthToken(): Promise<string> {
+  if (!process.env.PETLIBRO_USER || !process.env.PETLIBRO_PASS_MD5) {
+    throw new Error(
+      "No Petlibro password is set. Owner must authenticate to use this tool.",
+    );
+  }
+
+  const cached = getCachedToken(process.env.PETLIBRO_USER);
+  if (cached) return cached;
+
   const authApi = new petlibro.AuthApi(
     petlibro.createConfiguration({
       baseServer: petlibro.servers[0],
       authMethods: HEADERS,
     }),
   );
-  if (!process.env.PETLIBRO_USER || !process.env.PETLIBRO_PASS_MD5) {
-    throw new Error(
-      "No Petlibro password is set. Owner must authenticate to use this tool.",
-    );
-  }
   const loginResponse = await authApi.login({
     email: process.env.PETLIBRO_USER,
     password: process.env.PETLIBRO_PASS_MD5,
@@ -45,5 +50,6 @@ export async function getAuthToken(): Promise<string> {
     timezone: "America/Chicago",
   });
   assertSuccess(loginResponse);
+  setCachedToken(process.env.PETLIBRO_USER, loginResponse.data.token);
   return loginResponse.data.token;
 }
