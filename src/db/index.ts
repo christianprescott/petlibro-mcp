@@ -12,25 +12,33 @@ const db = new DatabaseSync(DB_PATH ?? ":memory:");
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS tokens (
-    user    TEXT    NOT NULL,
-    token   TEXT    NOT NULL,
-    created_at INTEGER NOT NULL DEFAULT (unixepoch())
+    user       TEXT    NOT NULL UNIQUE,
+    token      TEXT    NOT NULL,
+    created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+    updated_at INTEGER NOT NULL DEFAULT (unixepoch())
   )
 `);
 
-const selectToken = db.prepare(
-  "SELECT token FROM tokens WHERE user = ? ORDER BY created_at DESC LIMIT 1",
-);
+const selectToken = db.prepare("SELECT token FROM tokens WHERE user = ?");
 
-const insertToken = db.prepare(
-  "INSERT INTO tokens (user, token) VALUES (?, ?)",
-);
+const insertToken = db.prepare(`
+  INSERT INTO tokens (user, token)
+  VALUES (?, ?)
+  ON CONFLICT(user) DO UPDATE SET
+    token      = excluded.token,
+    updated_at = unixepoch()
+`);
 
-export function getCachedToken(user: string): string | null {
+export function getCachedToken(user: string | undefined): string | null {
+  if (!user) return null;
   const row = selectToken.get(user) as { token: string } | undefined;
   return row?.token ?? null;
 }
 
 export function setCachedToken(user: string, token: string): void {
   insertToken.run(user, token);
+}
+
+export function clearDb(): void {
+  db.exec("DELETE FROM tokens");
 }

@@ -1,5 +1,5 @@
 import * as petlibro from "petlibro-client";
-import { assertSuccess, createApiConfiguration } from "./helpers.js";
+import { assertSuccess, withApiConfig } from "./helpers.js";
 import type { ToolDefinition } from "./types.js";
 
 function indexToDays(repeatDay: string): string[] {
@@ -22,22 +22,23 @@ function indexToDays(repeatDay: string): string[] {
 async function getPlans(): Promise<
   petlibro.ListFeedingPlans200ResponseAllOfDataInner[]
 > {
-  const config = await createApiConfiguration();
-  const devicesApi = new petlibro.DevicesApi(config);
-  const devicesResponse = await devicesApi.listDevices();
-  assertSuccess(devicesResponse);
-  const [device] = devicesResponse.data;
-  if (!device) {
-    throw new Error("No feeder devices found.");
-  }
+  return withApiConfig(async (config) => {
+    const devicesApi = new petlibro.DevicesApi(config);
+    const devicesResponse = await devicesApi.listDevices();
+    assertSuccess(devicesResponse);
+    const [device] = devicesResponse.data;
+    if (!device) {
+      throw new Error("No feeder devices found.");
+    }
 
-  const plansApi = new petlibro.FeedingPlansApi(config);
-  const plansResponse = await plansApi.listFeedingPlans({
-    id: device.deviceSn,
-    deviceSn: device.deviceSn,
+    const plansApi = new petlibro.FeedingPlansApi(config);
+    const plansResponse = await plansApi.listFeedingPlans({
+      id: device.deviceSn,
+      deviceSn: device.deviceSn,
+    });
+    assertSuccess(plansResponse);
+    return plansResponse.data;
   });
-  assertSuccess(plansResponse);
-  return plansResponse.data;
 }
 
 const getFeedingPlans: ToolDefinition = {

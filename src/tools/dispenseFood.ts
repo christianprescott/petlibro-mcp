@@ -1,22 +1,24 @@
 import * as petlibro from "petlibro-client";
-import { assertSuccess, createApiConfiguration } from "./helpers.js";
+import { assertSuccess, withApiConfig } from "./helpers.js";
 import type { ToolDefinition } from "./types.js";
 
 async function makeFeedRequest(): Promise<string> {
-  const devicesApi = new petlibro.DevicesApi(await createApiConfiguration());
-  const devicesResponse = await devicesApi.listDevices();
-  assertSuccess(devicesResponse);
-  const [device] = devicesResponse.data;
-  if (!device) {
-    throw new Error("No feeder devices found.");
-  }
-  const feedResponse = await devicesApi.manualFeed({
-    deviceSn: device.deviceSn,
-    grainNum: 1,
-    requestId: "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+  return withApiConfig(async (config) => {
+    const devicesApi = new petlibro.DevicesApi(config);
+    const devicesResponse = await devicesApi.listDevices();
+    assertSuccess(devicesResponse);
+    const [device] = devicesResponse.data;
+    if (!device) {
+      throw new Error("No feeder devices found.");
+    }
+    const feedResponse = await devicesApi.manualFeed({
+      deviceSn: device.deviceSn,
+      grainNum: 1,
+      requestId: "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+    });
+    assertSuccess(feedResponse);
+    return "1 serving is being dispensed at your request.";
   });
-  assertSuccess(feedResponse);
-  return "1 serving is being dispensed at your request.";
 }
 
 const dispenseFood: ToolDefinition = {
