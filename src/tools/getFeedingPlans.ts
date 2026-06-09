@@ -1,5 +1,5 @@
 import * as petlibro from "petlibro-client";
-import { assertSuccess, getAuthToken } from "./helpers.js";
+import { assertSuccess, createApiConfiguration } from "./helpers.js";
 import type { ToolDefinition } from "./types.js";
 
 function indexToDays(repeatDay: string): string[] {
@@ -22,18 +22,8 @@ function indexToDays(repeatDay: string): string[] {
 async function getPlans(): Promise<
   petlibro.ListFeedingPlans200ResponseAllOfDataInner[]
 > {
-  const devicesApi = new petlibro.DevicesApi(
-    petlibro.createConfiguration({
-      baseServer: petlibro.servers[0],
-      authMethods: {
-        TokenAuth: await getAuthToken(),
-        Source: "ANDROID",
-        Language: "EN",
-        Version: "1.3.45",
-        Timezone: "America/Chicago",
-      },
-    }),
-  );
+  const config = await createApiConfiguration();
+  const devicesApi = new petlibro.DevicesApi(config);
   const devicesResponse = await devicesApi.listDevices();
   assertSuccess(devicesResponse);
   const [device] = devicesResponse.data;
@@ -41,18 +31,7 @@ async function getPlans(): Promise<
     throw new Error("No feeder devices found.");
   }
 
-  const plansApi = new petlibro.FeedingPlansApi(
-    petlibro.createConfiguration({
-      baseServer: petlibro.servers[0],
-      authMethods: {
-        TokenAuth: await getAuthToken(),
-        Source: "ANDROID",
-        Language: "EN",
-        Version: "1.3.45",
-        Timezone: "America/Chicago",
-      },
-    }),
-  );
+  const plansApi = new petlibro.FeedingPlansApi(config);
   const plansResponse = await plansApi.listFeedingPlans({
     id: device.deviceSn,
     deviceSn: device.deviceSn,

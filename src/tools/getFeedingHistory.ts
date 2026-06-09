@@ -1,22 +1,11 @@
 import * as petlibro from "petlibro-client";
 import { ToolDefinition } from "./types.js";
-import { assertSuccess, getAuthToken } from "./helpers.js";
+import { assertSuccess, createApiConfiguration } from "./helpers.js";
 
 async function getRecentActivity(): Promise<
   petlibro.ListWorkRecords200ResponseAllOfDataInnerWorkRecordsInner[]
 > {
-  const devicesApi = new petlibro.DevicesApi(
-    petlibro.createConfiguration({
-      baseServer: petlibro.servers[0],
-      authMethods: {
-        TokenAuth: await getAuthToken(),
-        Source: "ANDROID",
-        Language: "EN",
-        Version: "1.3.45",
-        Timezone: "America/Chicago",
-      },
-    }),
-  );
+  const devicesApi = new petlibro.DevicesApi(await createApiConfiguration());
   const devicesResponse = await devicesApi.listDevices();
   assertSuccess(devicesResponse);
   const [device] = devicesResponse.data;

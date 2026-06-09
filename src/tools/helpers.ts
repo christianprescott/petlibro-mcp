@@ -5,18 +5,29 @@ export function assertSuccess(response: petlibro.Response) {
   return response;
 }
 
-export async function getAuthToken(): Promise<string> {
-  const configurationParameters = {
+const HEADERS = {
+  Source: "ANDROID",
+  Language: "EN",
+  Version: "1.3.45",
+  Timezone: "America/Chicago",
+};
+
+export async function createApiConfiguration(): Promise<petlibro.Configuration> {
+  return petlibro.createConfiguration({
     baseServer: petlibro.servers[0],
     authMethods: {
-      Source: "ANDROID",
-      Language: "EN",
-      Version: "1.3.45",
-      Timezone: "America/Chicago",
+      ...HEADERS,
+      TokenAuth: await getAuthToken(),
     },
-  };
+  });
+}
+
+export async function getAuthToken(): Promise<string> {
   const authApi = new petlibro.AuthApi(
-    petlibro.createConfiguration(configurationParameters),
+    petlibro.createConfiguration({
+      baseServer: petlibro.servers[0],
+      authMethods: HEADERS,
+    }),
   );
   if (!process.env.PETLIBRO_USER || !process.env.PETLIBRO_PASS_MD5) {
     throw new Error(
