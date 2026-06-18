@@ -3,7 +3,7 @@
 This server offers tools enabling AI interactions with Petlibro smart feeder and fountain
 products. Check feeding schedules and history, emit food, and more.
 
-![Screenshot of an LLM chat. The user asks about the feeding schedule then requests some food be dispensed right away.](/demo.png)
+https://github.com/user-attachments/assets/561a71e5-1fee-4c91-808d-323a172480c0
 
 This project is only a proof-of-concept. Owners looking to automate their
 Petlibro devices should likely use the [Home Assistant MCP
